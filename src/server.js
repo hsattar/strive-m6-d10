@@ -5,6 +5,18 @@ import listEndpoints from 'express-list-endpoints'
 import productRouter from './services/products/index.js'
 import cartRouter from './services/cart/index.js'
 import { errorHandlers } from './middleware/errorHandlers.js'
+import upload from './services/upload/upload.js'
+import Grid from 'gridfs-stream'
+
+
+
+let gfs;
+connection();
+const conn = mongoose.connection;
+conn.once("open", function() {
+    gfs = Grid(conn.db, mongoose.mongo)
+    gfs.collection("photos");
+})
 
 const { PORT, DB_CONNECTION } = process.env
 
@@ -20,6 +32,32 @@ app.use(cors())
 app.get('/', (req, res) => res.send('Hello'))
 app.use('/products', productRouter)
 app.use('/cart', cartRouter)
+
+//  =========  media routes =================
+app.use("/file", upload)
+
+app.get('file/:filename', async(req, res, next) => {
+    try {
+        const file = await gfs.files.findOne({ filename: req.params.filename });
+        const readStream = gfs.createReadStream(file.filename);
+        readStream.pipe(res)
+    } catch (error) {
+        next("file not found")
+    }
+
+})
+
+app.delete("/file/:filename", async(req, res, next) => {
+        try {
+            await gfs.files.deleteOne({ filename: req.params.filename });
+            res.send("deleted")
+        } catch (error) {
+            next(error)
+        }
+
+
+    })
+    //  ========== error handlers =============
 
 app.use(errorHandlers)
 
