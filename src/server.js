@@ -19,7 +19,7 @@ app.get('/', (req, res) => res.send('Hello'))
 app.use('/products', productRouter)
 
 
-// ============  COMNNECTION =================
+// ============  CONNECTION =================
 mongoose.connect(process.env.DB_CONNECTION)
 
 mongoose.connection.on('connected', () => {

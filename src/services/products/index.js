@@ -63,7 +63,7 @@ router
         const products = await ProductsModel.findByIdAndDelete(req.params.id)
         console.log(products)
         if (products) {
-            res.send("201 - products deleted!")
+            res.send("204 - products deleted!")
         } else { res.send("products not found!") }
     } catch (error) {
         next(error)

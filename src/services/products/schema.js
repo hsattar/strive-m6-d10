@@ -9,7 +9,7 @@ const products = new Schema({
     brand: { type: String, required: true },
     imageUrl: { type: String, required: true },
     price: { type: Number, required: true },
-    category: [{ type: String, ref: "Author" }],
+    category: [{ type: String }],
     reviews: [{
         comment: { type: String, required: false },
         rate: { type: Number, required: false },
