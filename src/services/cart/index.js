@@ -9,9 +9,10 @@ const cartRouter = Router()
 cartRouter.route('/')
 .get(async (req, res, next) => {
     try {
-        const cart = await CartModel.find()
+        const cart = await CartModel.find().populate('productId')
         res.send(cart)
     } catch (error) {
+        console.log(error);
         next(error)
     }
 })

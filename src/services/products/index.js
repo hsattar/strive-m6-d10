@@ -1,11 +1,10 @@
-import express from 'express'
 import { Router } from 'express'
 import q2m from 'query-to-mongo'
 import ProductsModel from './schema.js'
 
-const router = express.Router();
+const proudctRouter = Router()
 
-router
+proudctRouter
     .route('/')
     .get(async(req, res, next) => {
         try {
@@ -34,7 +33,7 @@ router
 
 
 
-router
+proudctRouter
     .route('/:id')
     .get(async(req, res, next) => {
         try {
@@ -70,8 +69,7 @@ router
     }
 })
 
-router
-
+proudctRouter
     .route('/:id/reviews')
     .get(async(req, res, next) => {
         try {
@@ -98,8 +96,4 @@ router
     }
 })
 
-
-
-
-
-export default router
+export default proudctRouter
