@@ -37,6 +37,7 @@ proudctRouter.route('/')
 proudctRouter.route('/:id')
 .get(async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const products = await ProductsModel.findById(req.params.id)
         if (products === null) { "this products doesn't exist" } else {
             res.send(products)
@@ -47,6 +48,7 @@ proudctRouter.route('/:id')
 })
 .put(async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const products = await ProductsModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (products === null) { "this products doesn't exist" } else {
             res.send(products)
@@ -57,6 +59,7 @@ proudctRouter.route('/:id')
 })
 .delete(async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const products = await ProductsModel.findByIdAndDelete(req.params.id)
         console.log(products)
         if (products) {
@@ -71,6 +74,7 @@ proudctRouter.route('/:id')
 proudctRouter.route('/:id/reviews')
 .get(async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const products = await ProductsModel.findById(req.params.id)
         if (products) {
             res.send(products.reviews)
@@ -81,6 +85,7 @@ proudctRouter.route('/:id/reviews')
 })
 .post(reviewBodyValidator, async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const errors = validationResult(req)
         if (!errors.isEmpty()) return next(createHttpError(400, errors))
         const updateProductWithComment = await ProductsModel.findByIdAndUpdate(req.params.id, {
@@ -97,16 +102,29 @@ proudctRouter.route('/:id/reviews')
 proudctRouter.route('/:id/reviews/:reviewId')
 .put(async(req, res, next) => {
     try {
-        res.send('Edit Review')
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
+        if (req.params.reviewId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
+        const { id, reviewId } = req.params
+        const product = await ProductsModel.findById(id)
+        if (!product) return next(createHttpError(404, 'Cannot find a prouduct with the id provided'))
+        const reviewIndex = await product.reviews.findIndex(({ _id }) => _id.toString() === reviewId)
+        if (!reviewId) return next(createHttpError(404, 'Cannot find a review with the id provided'))
+        product.reviews[reviewIndex] = { ...product.reviews[reviewIndex].toObject(), ...req.body }
+        product.save()
+        res.send(product.reviews[reviewIndex])
     } catch (error) {
         next(error)
     }
 })
 .delete(async(req, res, next) => {
     try {
+        if (req.params.id.length !== 24) return next(createHttpError(400, 'Invalid ID'))
+        if (req.params.reviewId.length !== 24) return next(createHttpError(400, 'Invalid ID'))
         const { id, reviewId } = req.params
         const product = await ProductsModel.findById(id)
+        if (!product) return next(createHttpError(404, 'Cannot find a prouduct with the id provided'))
         const review = product.reviews.find(({ _id }) => _id.toString() === reviewId)
+        if (!review) return next(createHttpError(404, 'Cannot find a review with the id provided'))
         const updatedProduct = await ProductsModel.findByIdAndUpdate(id, { $pull: { reviews: review } })
        res.sendStatus(204)
     } catch (error) {
