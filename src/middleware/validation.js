@@ -52,7 +52,7 @@ export const reviewBodyValidator = checkSchema({
             errorMessage: 'You must provide a comment'
         }
     },
-    rate: {
+    rating: {
         in: ['body'],
         isInt: true,
         toInt: true,

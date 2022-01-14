@@ -12,7 +12,7 @@ const products = new Schema({
     category: [{ type: String }],
     reviews: [{
         comment: { type: String, required: false },
-        rate: { type: Number, required: false },
+        rating: { type: Number, required: false },
     }]
 })
 

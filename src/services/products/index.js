@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import q2m from 'query-to-mongo'
 import ProductsModel from './schema.js'
+import { productBodyValidator, reviewBodyValidator } from '../../middleware/validation.js'
+import { validationResult } from 'express-validator'
+import createHttpError from 'http-errors'
 
 const proudctRouter = Router()
 
@@ -21,8 +24,10 @@ proudctRouter
     })
 
 
-.post(async(req, res, next) => {
+.post(productBodyValidator, async(req, res, next) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return next(createHttpError(400, errors))
         const products = await ProductsModel(req.body)
         const { _id } = await products.save()
         res.status(201).send({ _id })
@@ -83,8 +88,10 @@ proudctRouter
     })
 
 
-.post(async(req, res, next) => {
+.post(reviewBodyValidator, async(req, res, next) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return next(createHttpError(400, errors))
         const updateProductWithComment = await ProductsModel.findByIdAndUpdate(req.params.id, {
             $push: { reviews: req.body },
         }, { new: true })
