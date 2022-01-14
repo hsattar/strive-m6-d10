@@ -12,10 +12,10 @@ proudctRouter.route('/')
 .get(async(req, res, next) => {
     try {
         const query = q2m(req.query)
-        const products = await ProductsModel.find()
+        const products = await ProductsModel.find(query.criteria)
         .sort(query.options.sort)
         .skip(query.options.skip)
-        .limit(query.options.limit)
+        .limit(query.options.limit || 5)
         res.status(200).send(products)
     } catch (error) {
         next(error)
@@ -37,6 +37,21 @@ proudctRouter.route('/')
 proudctRouter.post('/bulk-upload', async(req, res, next) => {
     try {
         const products = await ProductsModel.insertMany(productData)
+        res.send(products)
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+proudctRouter.get('/search', async(req, res, next) => {
+    try {
+        // const products = await ProductsModel.find({ $or: [
+        //     { name: `/.*${req.query.query}.*/` },
+        //     { description: `/.*${req.query.query}.*/` },
+        //     { brand: `/.*${req.query.query}.*/` }
+        // ]})
+        const products = await ProductsModel.find()
         res.send(products)
     } catch (error) {
         next(error)
