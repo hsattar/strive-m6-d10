@@ -7,23 +7,20 @@ import createHttpError from 'http-errors'
 
 const proudctRouter = Router()
 
-proudctRouter
-    .route('/')
-    .get(async(req, res, next) => {
-        try {
-            const query = q2m(req.query)
-            const products = await ProductsModel.find()
-                .skip(query.options.skip)
-                .limit(query.options.limit)
-                .sort(query.options.sort)
-            res.status(200).send(products)
+proudctRouter.route('/')
+.get(async(req, res, next) => {
+    try {
+        const query = q2m(req.query)
+        const products = await ProductsModel.find()
+            .skip(query.options.skip)
+            .limit(query.options.limit)
+            .sort(query.options.sort)
+        res.status(200).send(products)
 
-        } catch (error) {
-            next(error)
-        }
-    })
-
-
+    } catch (error) {
+        next(error)
+    }
+})
 .post(productBodyValidator, async(req, res, next) => {
     try {
         const errors = validationResult(req)
@@ -37,31 +34,27 @@ proudctRouter
 })
 
 
-
-proudctRouter
-    .route('/:id')
-    .get(async(req, res, next) => {
-        try {
-            const products = await ProductsModel.findById(req.params.id)
-            if (products === null) { "this products doesn't exist" } else {
-                res.send(products)
-            }
-        } catch (error) {
-            next(error)
+proudctRouter.route('/:id')
+.get(async(req, res, next) => {
+    try {
+        const products = await ProductsModel.findById(req.params.id)
+        if (products === null) { "this products doesn't exist" } else {
+            res.send(products)
         }
-    })
-    .put(async(req, res, next) => {
-        try {
-            const products = await ProductsModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
-            if (products === null) { "this products doesn't exist" } else {
-                res.send(products)
-            }
-        } catch (error) {
-            next(error)
+    } catch (error) {
+        next(error)
+    }
+})
+.put(async(req, res, next) => {
+    try {
+        const products = await ProductsModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        if (products === null) { "this products doesn't exist" } else {
+            res.send(products)
         }
-    })
-
-
+    } catch (error) {
+        next(error)
+    }
+})
 .delete(async(req, res, next) => {
     try {
         const products = await ProductsModel.findByIdAndDelete(req.params.id)
@@ -74,20 +67,18 @@ proudctRouter
     }
 })
 
-proudctRouter
-    .route('/:id/reviews')
-    .get(async(req, res, next) => {
-        try {
-            const products = await ProductsModel.findById(req.params.id)
-            if (products) {
-                res.send(products.reviews)
-            } else { res.send("") }
-        } catch (error) {
-            next(error)
-        }
-    })
 
-
+proudctRouter.route('/:id/reviews')
+.get(async(req, res, next) => {
+    try {
+        const products = await ProductsModel.findById(req.params.id)
+        if (products) {
+            res.send(products.reviews)
+        } else { res.send("") }
+    } catch (error) {
+        next(error)
+    }
+})
 .post(reviewBodyValidator, async(req, res, next) => {
     try {
         const errors = validationResult(req)
@@ -98,6 +89,26 @@ proudctRouter
         if (updateProductWithComment) {
             res.send(updateProductWithComment)
         } else { console.log("there are no product to update") }
+    } catch (error) {
+        next(error)
+    }
+})
+
+proudctRouter.route('/:id/reviews/:reviewId')
+.put(async(req, res, next) => {
+    try {
+        res.send('Edit Review')
+    } catch (error) {
+        next(error)
+    }
+})
+.delete(async(req, res, next) => {
+    try {
+        const { id, reviewId } = req.params
+        const product = await ProductsModel.findById(id)
+        const review = product.reviews.find(({ _id }) => _id.toString() === reviewId)
+        const updatedProduct = await ProductsModel.findByIdAndUpdate(id, { $pull: { reviews: review } })
+       res.sendStatus(204)
     } catch (error) {
         next(error)
     }

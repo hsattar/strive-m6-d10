@@ -25,7 +25,7 @@ app.use(errorHandlers)
 
 
 // ============  CONNECTION =================
-mongoose.connect(process.env.DB_CONNECTION)
+mongoose.connect(DB_CONNECTION)
 
 mongoose.connection.on('connected', () => {
     console.log('DB Connected')
