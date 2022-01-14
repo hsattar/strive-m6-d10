@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import productRouter from './services/products/index.js'
+import cartRouter from './services/cart/index.js'
+import { errorHandlers } from './middleware/errorHandlers.js'
 
 const { PORT, DB_CONNECTION } = process.env
 
@@ -14,6 +16,9 @@ app.use(cors())
 
 app.get('/', (req, res) => res.send('Hello'))
 app.use('/products', productRouter)
+app.use('/cart', cartRouter)
+
+app.use(errorHandlers)
 
 mongoose.connect(DB_CONNECTION)
 
