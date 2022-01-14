@@ -4,6 +4,7 @@ import ProductsModel from './schema.js'
 import { productBodyValidator, reviewBodyValidator } from '../../middleware/validation.js'
 import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
+import { productData } from '../../data/products.js'
 
 const proudctRouter = Router()
 
@@ -12,11 +13,10 @@ proudctRouter.route('/')
     try {
         const query = q2m(req.query)
         const products = await ProductsModel.find()
-            .skip(query.options.skip)
-            .limit(query.options.limit)
-            .sort(query.options.sort)
+        .sort(query.options.sort)
+        .skip(query.options.skip)
+        .limit(query.options.limit)
         res.status(200).send(products)
-
     } catch (error) {
         next(error)
     }
@@ -28,6 +28,16 @@ proudctRouter.route('/')
         const products = await ProductsModel(req.body)
         const { _id } = await products.save()
         res.status(201).send({ _id })
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+proudctRouter.post('/bulk-upload', async(req, res, next) => {
+    try {
+        const products = await ProductsModel.insertMany(productData)
+        res.send(products)
     } catch (error) {
         next(error)
     }

@@ -56,7 +56,7 @@ export const reviewBodyValidator = checkSchema({
         in: ['body'],
         isInt: true,
         toInt: true,
-        errorMessage: 'You must provide a rating as a number'
+        errorMessage: 'You must provide a rating as a number between 1 & 5'
     }
 })
 
