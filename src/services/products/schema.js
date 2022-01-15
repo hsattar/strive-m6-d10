@@ -7,12 +7,13 @@ const products = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     brand: { type: String, required: true },
-    imageUrl: { type: String, required: true },
+    imageUrl: { type: String, required: false },
     price: { type: Number, required: true },
     category: [{ type: String }],
+    productImage: { type: String },
     reviews: [{
-        comment: { type: String, required: true },
-        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, required: false },
+        rating: { type: Number, required: false, min: 1, max: 5 },
     }]
 })
 

@@ -20,7 +20,7 @@ app.use(cors())
 app.get('/', (req, res) => res.send('Hello'))
 app.use('/products', productRouter)
 app.use('/cart', cartRouter)
-
+app.use('/uploads', express.static('uploads'))
 app.use(errorHandlers)
 
 
